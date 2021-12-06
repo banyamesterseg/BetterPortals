@@ -5,6 +5,7 @@ import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.lauriethefish.betterportals.api.IntVector;
+import com.lauriethefish.betterportals.api.PortalDirection;
 import com.lauriethefish.betterportals.bukkit.block.FloodFillBlockMap;
 import com.lauriethefish.betterportals.bukkit.block.IViewableBlockInfo;
 import com.lauriethefish.betterportals.bukkit.block.fetch.BlockDataFetcherFactory;
@@ -20,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -58,7 +60,6 @@ public class BukkitBlockMap extends FloodFillBlockMap {
      * The fill stops when it reaches occluding blocks, as we don't need to render other blocks behind these.
      * The origin data is also fetched, and this is placed in <code>statesOutput</code>
      * <br>Some notes:
-     * - There used to be a check to see if the origin and destination states are the same, but this added too much complexity when checking for changes, so I decided to remove it.
      * - That unfortunately reduces the performance of the threaded bit slightly, but I think it's worth it for the gains here.
      * @param start Start position of the flood fill, at the origin
      * @param statesOutput List to place the newly viewable states in
@@ -69,6 +70,23 @@ public class BukkitBlockMap extends FloodFillBlockMap {
 
         // We don't use a Stack<T> or ArrayList<T> since those are much too slow
         int[] stack = new int[firstUpdate ? renderConfig.getTotalArrayLength() : 16];
+
+        int zOffset = renderConfig.getIntOffsets()[2];
+        int yOffset = renderConfig.getIntOffsets()[4];
+
+        Vector portalSize = portal.getSize();
+        double highestDimension = Math.max(portalSize.getX(), portalSize.getY());
+        int halfSize = (int) Math.floor(highestDimension / 2.0);
+        int xLimit = halfSize, yLimit = halfSize, zLimit = halfSize;
+
+        PortalDirection originDirection = portal.getOriginPos().getDirection();
+        if(originDirection == PortalDirection.EAST || originDirection == PortalDirection.WEST) {
+            xLimit = 0;
+        }   else if(originDirection == PortalDirection.NORTH || originDirection == PortalDirection.SOUTH) {
+            zLimit = 0;
+        }   else if(originDirection == PortalDirection.UP || originDirection == PortalDirection.DOWN) {
+            yLimit = 0;
+        }
 
         stack[0] = getArrayMapIndex(start.subtract(centerPos));
         int stackPos = 0;
@@ -160,9 +178,53 @@ public class BukkitBlockMap extends FloodFillBlockMap {
                 stack = newStack;
             }
 
-            // Continue for the surrounding blocks
-            for(int offset : renderConfig.getIntOffsets()) {
-                int newPos = positionInt + offset;
+            if(relX >= -xLimit) {
+                int newPos = positionInt + 1;
+                if(alreadyReachedMap[newPos] == 0) {
+                    alreadyReachedMap[newPos] = 1;
+
+                    stackPos += 1;
+                    stack[stackPos] = newPos;
+                }
+            }
+            if(relX <= xLimit) {
+                int newPos = positionInt - 1;
+                if(alreadyReachedMap[newPos] == 0) {
+                    alreadyReachedMap[newPos] = 1;
+
+                    stackPos += 1;
+                    stack[stackPos] = newPos;
+                }
+            }
+            if(relZ >= -zLimit) {
+                int newPos = positionInt + zOffset;
+                if(alreadyReachedMap[newPos] == 0) {
+                    alreadyReachedMap[newPos] = 1;
+
+                    stackPos += 1;
+                    stack[stackPos] = newPos;
+                }
+            }
+            if(relZ <= zLimit) {
+                int newPos = positionInt - zOffset;
+                if(alreadyReachedMap[newPos] == 0) {
+                    alreadyReachedMap[newPos] = 1;
+
+                    stackPos += 1;
+                    stack[stackPos] = newPos;
+                }
+            }
+            if(relY >= -yLimit) {
+                int newPos = positionInt + yOffset;
+                if(alreadyReachedMap[newPos] == 0) {
+                    alreadyReachedMap[newPos] = 1;
+
+                    stackPos += 1;
+                    stack[stackPos] = newPos;
+                }
+            }
+            if(relY <= yLimit) {
+                int newPos = positionInt - yOffset;
                 if(alreadyReachedMap[newPos] == 0) {
                     alreadyReachedMap[newPos] = 1;
 
