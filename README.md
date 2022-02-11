@@ -1,3 +1,5 @@
+TEST
+
 # BetterPortals
 BetterPortals is a minecraft spigot plugin which allows you to see through nether portals to look at the blocks on the other side.
 
