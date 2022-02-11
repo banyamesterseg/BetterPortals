@@ -38,6 +38,7 @@ public class PortalSpawnConfig {
     // Creates a cool sort of "creeping" effect for the player.
     @Getter private boolean dimensionBlendEnabled;
     @Getter private double blendFallOff;
+    @Getter private List<String> blendBlacklist;
 
     @Getter private double allowedSpawnTimePerTick;
 
@@ -53,6 +54,7 @@ public class PortalSpawnConfig {
         ConfigurationSection dimBlendSection = Objects.requireNonNull(file.getConfigurationSection("dimensionBlend"));
         dimensionBlendEnabled = dimBlendSection.getBoolean("enable");
         blendFallOff = dimBlendSection.getDouble("fallOffRate");
+        blendBlacklist = dimBlendSection.getStringList("blacklist");
 
         ConfigurationSection worldLinksSection = Objects.requireNonNull(file.getConfigurationSection("worldConnections"), "World connections section missing");
 
