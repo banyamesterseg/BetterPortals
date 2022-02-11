@@ -143,6 +143,8 @@ proxy:
 dimensionBlend:
   enable: false
   fallOffRate: 0.15 # Low values mean a greater distance
+# blacklist:
+#   - minecraft:chest
 
 chatMessages:
   prefix: "&7[&aBetterPortals&7]&a "
