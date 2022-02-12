@@ -11,8 +11,10 @@ import org.bukkit.Material;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Stream;
 
 @Singleton
 public class DimensionBlendManager implements IDimensionBlendManager    {
@@ -25,7 +27,7 @@ public class DimensionBlendManager implements IDimensionBlendManager    {
         Material.BARRIER,
         Material.DIAMOND_BLOCK,
         Material.EMERALD_BLOCK,
-        Material.IRON_BLOCK
+        Material.IRON_BLOCK,
     };
 
     private final PortalSpawnConfig spawnConfig;
@@ -64,6 +66,7 @@ public class DimensionBlendManager implements IDimensionBlendManager    {
                     Vector relativePos = new Vector(x, y, z);
 
                     double swapChance = calculateSwapChance(relativePos);
+
                     // Apply the random chance
                     if(random.nextDouble() > swapChance) {continue;}
 
@@ -72,27 +75,22 @@ public class DimensionBlendManager implements IDimensionBlendManager    {
 
                     Material originType = originPos.getBlock().getType();
                     Material destType = destPos.getBlock().getType();
-
+                    
                     if(!destType.isSolid()) {destType = fillInBlock;}
 
                     // Don't replace air or obsidian blocks so the portal doesn't get broken and we don't get blocks in the air.
                     boolean skip = false;
-                    for(Material type : BLACKLISTED_COPY_BLOCKS) {
-                        if(originType == type || destType == type) {
-                            skip = true;
-                            break;
-                        }
+                    final Material _destType = destType;
+                    if (spawnConfig.getBlendWhitelist().size() > 0) {
+                        skip = !(spawnConfig.getBlendWhitelist().contains(originType) && spawnConfig.getBlendWhitelist().contains(_destType));
+                    } else {
+                        skip = Stream.concat(Arrays.stream(BLACKLISTED_COPY_BLOCKS), spawnConfig.getBlendBlacklist().stream())
+                            .anyMatch(type -> originType == type || _destType == type);
                     }
 
-                    for(String blackListItem : spawnConfig.getBlendBlacklist()) {
-                        Material type = Material.matchMaterial(blackListItem);
-                        if(originType == type || destType == type) {
-                            skip = true;
-                            break;
-                        }
+                    if (skip) {
+                        continue;
                     }
-
-                    if(skip) {continue;}
 
                     originPos.getBlock().setType(destType);
                 }

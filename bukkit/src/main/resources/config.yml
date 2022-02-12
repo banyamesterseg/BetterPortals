@@ -145,6 +145,8 @@ dimensionBlend:
   fallOffRate: 0.15 # Low values mean a greater distance
 # blacklist:
 #   - minecraft:chest
+# whitelist:
+#   - minecraft:stone
 
 chatMessages:
   prefix: "&7[&aBetterPortals&7]&a "

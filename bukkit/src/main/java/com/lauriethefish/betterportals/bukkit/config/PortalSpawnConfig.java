@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import com.lauriethefish.betterportals.shared.logging.Logger;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -38,7 +39,8 @@ public class PortalSpawnConfig {
     // Creates a cool sort of "creeping" effect for the player.
     @Getter private boolean dimensionBlendEnabled;
     @Getter private double blendFallOff;
-    @Getter private List<String> blendBlacklist;
+    @Getter private List<Material> blendWhitelist;
+    @Getter private List<Material> blendBlacklist;
 
     @Getter private double allowedSpawnTimePerTick;
 
@@ -50,11 +52,28 @@ public class PortalSpawnConfig {
     public void load(FileConfiguration file) {
         worldLinks = new HashMap<>();
         disabledWorlds = new HashSet<>();
+        blendBlacklist = new ArrayList<>();
+        blendWhitelist = new ArrayList<>();
 
         ConfigurationSection dimBlendSection = Objects.requireNonNull(file.getConfigurationSection("dimensionBlend"));
         dimensionBlendEnabled = dimBlendSection.getBoolean("enable");
         blendFallOff = dimBlendSection.getDouble("fallOffRate");
-        blendBlacklist = dimBlendSection.getStringList("blacklist");
+        for (String whitelistItem : dimBlendSection.getStringList("whitelist")) {
+            Material type = Material.matchMaterial(whitelistItem);
+            if (type == null) {
+                logger.warning("Dimension blend whitelist material \"%s\" is invalid!", whitelistItem);
+                continue;
+            }
+            blendWhitelist.add(type);
+        }
+        for (String blacklistItem : dimBlendSection.getStringList("blacklist")) {
+            Material type = Material.matchMaterial(blacklistItem);
+            if (type == null) {
+                logger.warning("Dimension blend blacklist material \"%s\" is invalid!", blacklistItem);
+                continue;
+            }
+            blendBlacklist.add(type);
+        }
 
         ConfigurationSection worldLinksSection = Objects.requireNonNull(file.getConfigurationSection("worldConnections"), "World connections section missing");
 
