@@ -143,10 +143,11 @@ proxy:
 dimensionBlend:
   enable: false
   fallOffRate: 0.15 # Low values mean a greater distance
-# blacklist:
-#   - minecraft:chest
-# whitelist:
-#   - minecraft:stone
+# Will not infest the following blocks (if no whitelist is given)
+  blacklist:
+    - minecraft:chest
+# Will ONLY infest the following blocks (overrides blacklist)
+  whitelist: []
 
 chatMessages:
   prefix: "&7[&aBetterPortals&7]&a "
