@@ -5,6 +5,8 @@ import com.lauriethefish.betterportals.api.PortalDirection;
 import com.lauriethefish.betterportals.bukkit.config.MessageConfig;
 import com.lauriethefish.betterportals.bukkit.config.PortalSpawnConfig;
 import com.lauriethefish.betterportals.bukkit.math.MathUtil;
+import com.lauriethefish.betterportals.bukkit.player.IPlayerData;
+import com.lauriethefish.betterportals.bukkit.player.IPlayerDataManager;
 import com.lauriethefish.betterportals.bukkit.portal.IPortal;
 import com.lauriethefish.betterportals.bukkit.portal.IPortalManager;
 import com.lauriethefish.betterportals.bukkit.portal.spawning.IPortalSpawner;
@@ -51,15 +53,17 @@ public class SpawningEvents implements Listener {
     private final PortalSpawnConfig spawnConfig;
     private final MessageConfig messageConfig;
     private final Logger logger;
+    private final IPlayerDataManager playerDataManager;
 
     @Inject
-    public SpawningEvents(IEventRegistrar eventRegistrar, IPortalSpawner portalSpawnChecker, IPortalManager portalManager, IPortal.Factory portalFactory, PortalSpawnConfig spawnConfig, MessageConfig messageConfig, Logger logger) {
+    public SpawningEvents(IEventRegistrar eventRegistrar, IPortalSpawner portalSpawnChecker, IPortalManager portalManager, IPortal.Factory portalFactory, PortalSpawnConfig spawnConfig, MessageConfig messageConfig, Logger logger, IPlayerDataManager playerDataManager) {
         this.portalSpawnChecker = portalSpawnChecker;
         this.portalManager = portalManager;
         this.portalFactory = portalFactory;
         this.spawnConfig = spawnConfig;
         this.messageConfig = messageConfig;
         this.logger = logger;
+        this.playerDataManager = playerDataManager;
 
         eventRegistrar.register(this);
     }
@@ -69,6 +73,14 @@ public class SpawningEvents implements Listener {
         // Some worlds can be configured to use vanilla portal logic
         if(spawnConfig.isWorldDisabled(event.getWorld())) {return;}
         if(event.getReason() != PortalCreateEvent.CreateReason.FIRE) {return;}
+        
+        Entity entity = event.getEntity();
+        if (entity instanceof Player) {
+            IPlayerData playerData = playerDataManager.getPlayerData((Player) entity);
+            if (playerData.getPermanentData().getBoolean("createVanillaPortals")) {
+                return;
+            }
+        }
 
         Vector highPosition = null;
         Vector lowPosition = null;

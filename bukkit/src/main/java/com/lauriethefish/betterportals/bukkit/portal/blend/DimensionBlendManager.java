@@ -83,9 +83,16 @@ public class DimensionBlendManager implements IDimensionBlendManager    {
                     final Material _destType = destType;
                     if (spawnConfig.getBlendWhitelist().size() > 0) {
                         skip = !(spawnConfig.getBlendWhitelist().contains(originType) && spawnConfig.getBlendWhitelist().contains(_destType));
-                    } else {
+                    } else if (spawnConfig.getBlendBlacklist().size() > 0) {
                         skip = Stream.concat(Arrays.stream(BLACKLISTED_COPY_BLOCKS), spawnConfig.getBlendBlacklist().stream())
                             .anyMatch(type -> originType == type || _destType == type);
+                    } else {
+                        for(Material type : BLACKLISTED_COPY_BLOCKS) {
+                            if(originType == type || destType == type) {
+                                skip = true;
+                                break;
+                            }
+                        }
                     }
 
                     if (skip) {

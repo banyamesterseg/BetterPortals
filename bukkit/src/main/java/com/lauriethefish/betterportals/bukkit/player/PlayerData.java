@@ -198,6 +198,7 @@ public class PlayerData implements IPlayerData  {
     private YamlConfiguration createDefaultDataFile(File permanentDataFile) {
         YamlConfiguration permanentDataYml = YamlConfiguration.loadConfiguration(permanentDataFile);
         permanentDataYml.addDefault("seeThroughPortal", true);
+        permanentDataYml.addDefault("createVanillaPortals", false);
         permanentDataYml.options().copyDefaults(true);
         return permanentDataYml;
     }
