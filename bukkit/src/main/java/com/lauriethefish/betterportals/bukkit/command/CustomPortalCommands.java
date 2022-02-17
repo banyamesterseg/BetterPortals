@@ -288,5 +288,26 @@ public class CustomPortalCommands {
         return true;
     }
 
+    @Command
+    @Path("betterportals/toggle")
+    @RequiresPermissions("BetterPortals.toggleCreateVanillaPortal")
+    @RequiresPlayer
+    @Description("Toggles whether or not use the vanilla portal.")
+    public boolean toggleVanillaPortal(Player player) {
+        IPlayerData playerData = playerDataManager.getPlayerData(player);
+        assert playerData != null;
+
+        boolean createVanillaPortals = playerData.getPermanentData().getBoolean("createVanillaPortals");
+        if (createVanillaPortals) {
+            playerData.getPermanentData().set("createVanillaPortals", false);
+            player.sendMessage(messageConfig.getChatMessage("createVanillaPortalDisabled"));
+        } else {
+            playerData.getPermanentData().set("createVanillaPortals", true);
+            player.sendMessage(messageConfig.getChatMessage("createVanillaPortalEnabled"));
+        }
+
+        return true;
+    }
+
 
 }
