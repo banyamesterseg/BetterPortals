@@ -25,6 +25,8 @@ public class MiscConfig {
 
     @Getter private int portalSaveInterval;
 
+    @Getter private boolean showVanillaPortalWarningFirstTimeOnly;
+
     @Inject
     public MiscConfig(Logger logger) {
         this.logger = logger;
@@ -51,5 +53,6 @@ public class MiscConfig {
         teleportCooldown = config.getInt("teleportCooldown");
         testingCommandsEnabled = config.getBoolean("enableTestingCommands");
         portalSaveInterval = config.getInt("portalSaveInterval");
+        showVanillaPortalWarningFirstTimeOnly = config.getBoolean("showVanillaPortalWarningFirstTimeOnly");
     }
 }

@@ -91,9 +91,17 @@ bukkit {
             description = ' Allows you to use /bp getname'
             setDefault('OP')
         }
+        'betterportals.switchCreateVanillaPortal' {
+            description = ' Required for any player to switch vanilla portals'
+            setDefault('TRUE')
+        }
         'betterportals.toggleCreateVanillaPortal' {
             description = ' Required for any player to toggle vanilla portals'
             setDefault('TRUE')
+        }
+        'betterportals.switchCreateVanillaPortalForPlayer' {
+            description = ' Allows you to switch vanilla portals for a player'
+            setDefault('OP')
         }
     }
 }

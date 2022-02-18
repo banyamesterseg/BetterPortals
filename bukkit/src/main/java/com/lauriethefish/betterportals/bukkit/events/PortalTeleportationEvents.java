@@ -2,7 +2,10 @@ package com.lauriethefish.betterportals.bukkit.events;
 
 import com.google.inject.Inject;
 import com.lauriethefish.betterportals.bukkit.config.MessageConfig;
+import com.lauriethefish.betterportals.bukkit.config.MiscConfig;
 import com.lauriethefish.betterportals.bukkit.config.PortalSpawnConfig;
+import com.lauriethefish.betterportals.bukkit.player.IPlayerData;
+import com.lauriethefish.betterportals.bukkit.player.IPlayerDataManager;
 import com.lauriethefish.betterportals.bukkit.portal.IPortal;
 import com.lauriethefish.betterportals.bukkit.portal.IPortalManager;
 import org.bukkit.entity.Entity;
@@ -21,12 +24,16 @@ public class PortalTeleportationEvents implements Listener {
     private final PortalSpawnConfig spawnConfig;
     private final IPortalManager portalManager;
     private final MessageConfig messageConfig;
+    private final MiscConfig miscConfig;
+    private final IPlayerDataManager playerDataManager;
 
     @Inject
-    public PortalTeleportationEvents(IEventRegistrar eventRegistrar, IPortalManager portalManager, PortalSpawnConfig spawnConfig, MessageConfig messageConfig) {
+    public PortalTeleportationEvents(IEventRegistrar eventRegistrar, IPortalManager portalManager, PortalSpawnConfig spawnConfig, MessageConfig messageConfig, MiscConfig miscConfig, IPlayerDataManager playerDataManager) {
         this.portalManager = portalManager;
         this.messageConfig = messageConfig;
         this.spawnConfig = spawnConfig;
+        this.miscConfig = miscConfig;
+        this.playerDataManager = playerDataManager;
 
         eventRegistrar.register(this);
     }
@@ -58,9 +65,17 @@ public class PortalTeleportationEvents implements Listener {
             }
 
             // Send a warning for vanilla nether portals, since players might not realise that they need relighting
-            String warning = messageConfig.getWarningMessage("vanillaPortal");
-            if(!warning.isEmpty()) {
-                event.getPlayer().sendMessage(warning);
+            IPlayerData playerData = playerDataManager.getPlayerData(event.getPlayer());
+            if (!playerData.getPermanentData().getBoolean("createVanillaPortals")) {
+                if (!(miscConfig.isShowVanillaPortalWarningFirstTimeOnly() && !playerData.getShowVanillaPortalWarning())) {
+                    String warning = messageConfig.getWarningMessage("vanillaPortal");
+                    if(!warning.isEmpty()) {
+                        event.getPlayer().sendMessage(warning);
+                    }
+                    if (miscConfig.isShowVanillaPortalWarningFirstTimeOnly()) {
+                        playerData.setShowVanillaPortalWarning(false);
+                    }
+                }
             }
         }
     }

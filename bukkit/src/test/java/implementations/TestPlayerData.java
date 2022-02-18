@@ -56,4 +56,14 @@ public class TestPlayerData implements IPlayerData {
     public void onLogout() {
 
     }
+
+    @Override
+    public void setShowVanillaPortalWarning(boolean isShow) {
+
+    }
+
+    @Override
+    public boolean getShowVanillaPortalWarning() {
+        return true;
+    }
 }

@@ -10,6 +10,8 @@ import com.lauriethefish.betterportals.bukkit.player.IPlayerData;
 import com.lauriethefish.betterportals.bukkit.player.IPlayerDataManager;
 import com.lauriethefish.betterportals.bukkit.portal.IPortal;
 import com.lauriethefish.betterportals.bukkit.portal.IPortalManager;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -289,6 +291,23 @@ public class CustomPortalCommands {
     }
 
     @Command
+    @Path("betterportals/switch")
+    @RequiresPermissions("BetterPortals.switchCreateVanillaPortal")
+    @RequiresPlayer
+    @Description("Set whether or not use the vanilla portal.")
+    @Argument(name = "usevanillaportal", defaultValue = "false")
+    public boolean switchVanillaPortal(Player player, boolean useVanillaPortal) {
+        IPlayerData playerData = playerDataManager.getPlayerData(player);
+        assert playerData != null;
+
+        playerData.getPermanentData().set("createVanillaPortals", useVanillaPortal);
+        playerData.savePermanentData();
+        player.sendMessage(messageConfig.getChatMessage(useVanillaPortal ? "createVanillaPortalEnabled" : "createVanillaPortalDisabled"));
+
+        return true;
+    }
+
+    @Command
     @Path("betterportals/toggle")
     @RequiresPermissions("BetterPortals.toggleCreateVanillaPortal")
     @RequiresPlayer
@@ -297,15 +316,26 @@ public class CustomPortalCommands {
         IPlayerData playerData = playerDataManager.getPlayerData(player);
         assert playerData != null;
 
-        boolean createVanillaPortals = playerData.getPermanentData().getBoolean("createVanillaPortals");
-        if (createVanillaPortals) {
-            playerData.getPermanentData().set("createVanillaPortals", false);
-            player.sendMessage(messageConfig.getChatMessage("createVanillaPortalDisabled"));
-        } else {
-            playerData.getPermanentData().set("createVanillaPortals", true);
-            player.sendMessage(messageConfig.getChatMessage("createVanillaPortalEnabled"));
-        }
+        switchVanillaPortal(player, !playerData.getPermanentData().getBoolean("createVanillaPortals"));
 
+        return true;
+    }
+
+    @Command
+    @Path("betterportals/switchforplayer")
+    @RequiresPermissions("BetterPortals.switchCreateVanillaPortalForPlayer")
+    @RequiresPlayer
+    @Description("Set for player whether or not use the vanilla portal.")
+    @Argument(name = "playername")
+    @Argument(name = "usevanillaportal", defaultValue = "false")
+    public boolean toggleVanillaPortalForPlayer(Player player, String playername, boolean useVanillaPortal) {
+        Player target = Bukkit.getPlayer(playername);
+        if (target == null) 
+        {
+            player.sendMessage(messageConfig.getChatMessage("playerNotFound"));
+            return false;
+        }
+        switchVanillaPortal(target, useVanillaPortal);
         return true;
     }
 

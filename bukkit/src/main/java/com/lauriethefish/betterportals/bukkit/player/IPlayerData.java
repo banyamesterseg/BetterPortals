@@ -63,4 +63,7 @@ public interface IPlayerData {
     interface Factory {
         IPlayerData create(Player player);
     }
+
+    void setShowVanillaPortalWarning(boolean isShow);
+    @NotNull boolean getShowVanillaPortalWarning();
 }

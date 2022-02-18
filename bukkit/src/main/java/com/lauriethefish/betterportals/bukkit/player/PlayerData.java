@@ -43,6 +43,8 @@ public class PlayerData implements IPlayerData  {
 
     private boolean viewsFrozen;
 
+    private boolean showVanillaPortalWarning;
+
     @Inject
     public PlayerData(@Assisted Player player, IPlayerSelectionManager selection, IPortalManager portalManager, IPortalPredicateManager portalPredicateManager, BetterPortals pl, Logger logger, IPortalActivityManager portalActivityManager, PlayerPortalViewFactory playerPortalViewFactory) {
         this.player = player;
@@ -55,6 +57,8 @@ public class PlayerData implements IPlayerData  {
         this.playerPortalViewFactory = playerPortalViewFactory;
 
         permanentData = loadPermanentDataYml();
+        
+        setShowVanillaPortalWarning(true);
     }
 
     @Override
@@ -201,5 +205,15 @@ public class PlayerData implements IPlayerData  {
         permanentDataYml.addDefault("createVanillaPortals", false);
         permanentDataYml.options().copyDefaults(true);
         return permanentDataYml;
+    }
+
+    @Override
+    public void setShowVanillaPortalWarning(boolean isShow) {
+        showVanillaPortalWarning = isShow;
+    }
+
+    @Override
+    public boolean getShowVanillaPortalWarning() {
+        return showVanillaPortalWarning;
     }
 }

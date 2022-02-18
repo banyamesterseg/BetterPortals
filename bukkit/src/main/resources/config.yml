@@ -121,6 +121,9 @@ worldConnections: {}
 # This specifies the amount of time allowed per-tick (in milliseconds)
 allowedSpawnTimePerTick: 35
 
+# If this set true the vanillaPortal warning only shown to the player once in the current session
+showVanillaPortalWarningFirstTimeOnly: false
+
 # Allows for setting a proxy server to allow cross-server portals
 proxy:
   enableProxy: false
@@ -175,6 +178,7 @@ chatMessages:
   seeThroughPortalEnabled: "All eligible nether portals will now show you what's on the other side."
   createVanillaPortalEnabled: "From now on you will create vanilla portals."
   createVanillaPortalDisabled: "From now on you will create non-vanilla portals."
+  playerNotFound: "The player not found!"
 
   # Printed if a player lights a portal in an unlinked world
   # To disable, just remove all the text inside the quotes
